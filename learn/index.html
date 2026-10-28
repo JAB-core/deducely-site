@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How to Play Sudoku: Classic, X-Sudoku, Killer, Samurai and Sudoku Mine</title>
+<link rel="icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Learn to play sudoku step by step with Deuce the penguin. Interactive walkthroughs for Classic, Mini 6x6, X-Sudoku, Killer, Samurai and Sudoku Mine, plus pencil marks and the tricks that solve most puzzles.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Layout: one reading column; Deuce stands beside each section on wide screens and above it on phones.
+   Tokens are the Deducely app's own (indigo accent, variant colour blocks, Inter + Space Grotesk). */
+:root{
+  --bg:#f5f5f9; --surface:#ffffff; --ink:#151827; --muted:#5d6275; --line:#d9dae4; --line-strong:#2a2d3d;
+  --accent:#4338ca; --accent-soft:#e8e7fb; --amber:#f2a516; --amber-soft:#fdf1d6;
+  --teal:#0e7c6e; --coral:#c8461f; --sky:#1f7ec4; --flake:#1f7ec4; --on-block:#ffffff; --on-amber:#151827;
+  --given:#151827; --placed:#4338ca; --sight:#fde9c2; --unit:#eceafd;
+  --t1:#fdeee2; --t2:#e2f3e7; --t3:#fbe7ef; --t4:#f8f2d4; --t5:#ecebe6; --cage:#6b7280; --crimson:#b3263e; --shared:#f7e6ea;
+  --display:"Space Grotesk", "Inter", system-ui, sans-serif;
+  --body:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --r:18px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11121a; --surface:#1b1c27; --ink:#ecedf5; --muted:#a3a7ba; --line:#33364a; --line-strong:#9aa0bd;
+  --accent:#8b93ff; --accent-soft:#272a4a; --amber:#f2a516; --amber-soft:#3a2f17;
+  --teal:#16a08e; --coral:#e2653d; --sky:#2b8fd6; --flake:#b9e0ff; --on-block:#ffffff; --on-amber:#151827;
+  --given:#ecedf5; --placed:#a9afff; --sight:#4a3a16; --unit:#262947; --t1:#4a2c1a; --t2:#1c3d2b; --t3:#4a1f3c; --t4:#3d3a12; --t5:#163b40; --cage:#9aa0bd; --crimson:#b3263e; --shared:#2e1d25; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11121a; --surface:#1b1c27; --ink:#ecedf5; --muted:#a3a7ba; --line:#33364a; --line-strong:#9aa0bd;
+  --accent:#8b93ff; --accent-soft:#272a4a; --amber:#f2a516; --amber-soft:#3a2f17;
+  --teal:#16a08e; --coral:#e2653d; --sky:#2b8fd6; --flake:#b9e0ff; --on-block:#ffffff; --on-amber:#151827;
+  --given:#ecedf5; --placed:#a9afff; --sight:#4a3a16; --unit:#262947; --t1:#4a2c1a; --t2:#1c3d2b; --t3:#4a1f3c; --t4:#3d3a12; --t5:#163b40; --cage:#9aa0bd; --crimson:#b3263e; --shared:#2e1d25; color-scheme:dark}
+
+*{box-sizing:border-box}
+img{height:auto}
+body{background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--body);margin:0}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);line-height:1.12;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.4rem,6vw,4.1rem);font-weight:700;letter-spacing:-.02em}
+h2{font-size:clamp(1.7rem,3.6vw,2.4rem);font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.2rem;font-weight:700}
+p{margin:0;max-width:62ch}
+a{color:var(--accent)}
+.eyebrow{font:600 .78rem/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+
+/* header */
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:20px}
+.brand{font:700 1.35rem/1 var(--display);color:var(--ink);text-decoration:none;letter-spacing:-.01em}
+.nav{display:flex;flex-wrap:wrap;gap:6px}
+.nav a{font:600 .85rem/1 var(--body);text-decoration:none;color:var(--ink);padding:9px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+.nav a:hover{border-color:var(--accent);color:var(--accent)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.3fr .7fr;gap:32px;align-items:end;padding-block:28px 40px}
+.hero p.lede{font-size:1.2rem;color:var(--muted);margin-top:18px}
+.hero img{width:100%;max-width:280px;justify-self:center;display:block}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.chip{font:600 .9rem/1 var(--body);padding:10px 14px;border-radius:999px;color:var(--on-block);text-decoration:none}
+.chip.classic{background:#4338ca} .chip.x{background:var(--teal)} .chip.killer{background:var(--coral)} .chip.mini{background:var(--amber);color:var(--on-amber)} .chip.flurry{background:var(--sky)} .chip.samurai{background:var(--crimson)}
+
+/* sections */
+section{padding-block:44px;border-top:1px solid var(--line)}
+.sec{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:36px;align-items:start}
+.sec.flip{grid-template-columns:220px minmax(0,1fr)}
+.sec.flip .deuce{order:-1}
+.deuce{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px)}
+.deuce img{width:100%;max-width:200px;display:block;margin-inline:auto}
+#basics .deuce img{max-width:160px}
+.stack{display:flex;flex-direction:column;gap:18px;min-width:0}
+.say{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;font-weight:500}
+.say::before{content:"Deuce";display:block;font:700 .72rem/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+
+/* rules list */
+.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.rule{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px}
+.rule strong{font-family:var(--display);font-size:1.05rem}
+.rule p{color:var(--muted);font-size:.95rem}
+
+/* grids */
+.grid{display:grid;background:var(--line-strong);gap:1px;border:2px solid var(--line-strong);border-radius:10px;overflow:hidden;width:100%;aspect-ratio:1;max-width:100%}
+.cell{background:var(--tint,var(--surface));display:flex;align-items:center;justify-content:center;font:600 clamp(.8rem,3.2vw,1.5rem)/1 var(--body);font-variant-numeric:tabular-nums;color:var(--given);position:relative;transition:background-color .25s}
+.cell.placed{color:var(--placed)}
+.cell.unit{background:var(--unit)}
+.cell.sight{background:var(--sight)}
+.cell.hit{background:var(--amber);color:var(--on-amber)}
+.cell.diag:not(.unit):not(.sight):not(.hit){background:var(--accent-soft)}
+.cell.br{box-shadow:inset -2px 0 0 var(--line-strong)}
+.cell.bb{box-shadow:inset 0 -2px 0 var(--line-strong)}
+.cell.br.bb{box-shadow:inset -2px -2px 0 var(--line-strong)}
+.mini-grid .cell{font-size:clamp(1rem,4.6vw,1.7rem)}
+.small-grid{max-width:260px}
+.small-grid .cell{font-size:clamp(.7rem,2.6vw,1rem)}
+figure{margin:0;display:flex;flex-direction:column;gap:10px}
+figcaption{font-size:.92rem;color:var(--muted)}
+
+/* walkthroughs */
+.pm{display:grid;grid-template-columns:repeat(3,1fr);width:100%;height:100%;padding:6%;gap:0}
+.pm span{display:flex;align-items:center;justify-content:center;font:500 clamp(.42rem,1.3vw,.7rem)/1 var(--body);color:var(--muted)}
+.pm span.gone{text-decoration:line-through;color:var(--coral)}
+
+.flake{width:62%;height:62%;color:var(--flake)}
+.cell.hit .flake{color:var(--on-amber)}
+.dot{width:16%;height:16%;border-radius:50%;background:var(--muted)}
+.cell.clue{color:var(--given);font-weight:700}
+.walk{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:28px;align-items:start;margin-top:6px}
+.walk .say{min-height:170px}
+.walk-side{display:flex;flex-direction:column;gap:16px}
+.walk-head{display:flex;gap:14px;align-items:flex-end}
+.walk-head img{width:86px;height:auto;flex:none}
+.walk-head .say{flex:1}
+.sec .walk{grid-template-columns:minmax(0,530px) minmax(0,1fr);gap:22px}
+.sec .walk-head img{display:none}
+.sec{grid-template-columns:minmax(0,1fr) 180px}
+.sec.flip{grid-template-columns:180px minmax(0,1fr)}
+.sec .deuce img{max-width:170px}
+.grid{position:relative}
+.cage-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+.cage-svg path{fill:none;stroke:var(--cage);stroke-width:1.6px;vector-effect:non-scaling-stroke;stroke-dasharray:5 4}
+.sum{position:absolute;top:4px;left:5px;font:700 clamp(.62rem,2.3vw,1rem)/1 var(--body);color:var(--ink);z-index:1;font-variant-numeric:tabular-nums}
+.killer .cell span:first-child{font-size:clamp(.72rem,2.6vw,1.2rem);transform:translate(12%,14%)}
+/* samurai */
+.sscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px}
+.sgrid{display:grid;grid-template-columns:repeat(21,1fr);position:relative;width:100%;min-width:440px;aspect-ratio:1}
+.sgrid .cell{font-size:clamp(.5rem,1.55vw,.95rem);font-weight:600}
+.sgrid .cell.gap{background:transparent;visibility:hidden}
+.sgrid .cell.shared:not(.unit):not(.sight):not(.hit){background:var(--shared)}
+.sgrid svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.sgrid .thin{stroke:var(--line);stroke-width:1px;vector-effect:non-scaling-stroke}
+.sgrid .thick{stroke:var(--line-strong);stroke-width:2px;vector-effect:non-scaling-stroke;fill:none}
+/* first solve */
+.solver{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:28px;align-items:start}
+.solver .say{min-height:150px}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button{font:600 .95rem/1 var(--body);border-radius:12px;padding:13px 18px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+button.primary{background:#4338ca;border-color:#4338ca;color:#fff}
+button:disabled{opacity:.45;cursor:default}
+.progress{font:600 .85rem/1 var(--body);color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar span{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+
+/* variant blocks */
+.vhead{border-radius:var(--r);padding:20px 22px;color:var(--on-block);display:flex;flex-direction:column;gap:6px}
+.vhead.classic{background:#4338ca} .vhead.x{background:var(--teal)} .vhead.killer{background:var(--coral)} .vhead.mini{background:var(--amber);color:var(--on-amber)} .vhead.flurry{background:var(--sky)} .vhead.samurai{background:var(--crimson)}
+.vhead p{opacity:.92;font-weight:500}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
+.facts{display:flex;flex-direction:column;gap:12px}
+.fact h3{margin-bottom:4px}
+.fact p{color:var(--muted)}
+
+/* killer cages */
+.cages{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.cage-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.cage{display:flex;gap:0;border:2px dashed var(--muted);border-radius:8px;width:max-content;position:relative}
+.cage div{width:44px;height:44px;display:flex;align-items:center;justify-content:center;font:600 1.1rem var(--body);color:var(--placed)}
+.cage div + div{border-left:1px solid var(--line)}
+.cage .sum{position:absolute;top:2px;left:4px;font:700 .7rem/1 var(--body);color:var(--muted);width:auto;height:auto}
+.cage-card p{font-size:.9rem;color:var(--muted)}
+.cage-card p b{color:var(--ink)}
+
+/* tips */
+.tips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.tip{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:8px}
+.tip p{color:var(--muted);font-size:.96rem}
+.pencil{display:grid;grid-template-columns:repeat(3,1fr);width:66px;height:66px;border:1px solid var(--line);border-radius:8px;font:500 .72rem/1 var(--body);color:var(--muted);place-items:center}
+
+/* race + get (one block) */
+.get{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:end;background:#4338ca;color:#fff;border-radius:24px;padding:32px;margin-block:44px 24px;overflow:hidden;border-top:0}
+.get h2{color:#fff}
+.get-main{display:flex;flex-direction:column;gap:14px;min-width:0}
+.get-main>p{opacity:.9}
+.get img{width:180px;display:block;margin-bottom:-32px}
+.race{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:6px}
+.race div{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:var(--r);padding:16px}
+.race b{display:block;font:700 1.02rem var(--display);margin-bottom:4px;color:#fff}
+.race p{color:#fff;opacity:.85;font-size:.95rem}
+.tiers{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.race .tiers{background:none;border:0;padding:0}
+.tiers span{font:600 .8rem/1 var(--body);padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.18);color:#fff}
+.soon{display:inline-block;align-self:flex-start;margin-top:6px;font:600 .9rem/1 var(--body);background:#fff;color:#4338ca;padding:12px 16px;border-radius:12px}
+footer{padding-block:12px 36px;color:var(--muted);font-size:.85rem}
+
+@media (max-width:820px){
+  .walk,.sec .walk{grid-template-columns:1fr}
+  .sec .deuce img{max-width:130px}
+  .hero{grid-template-columns:1fr}
+  .hero img{max-width:200px;order:-1;justify-self:start}
+  .sec,.sec.flip{grid-template-columns:1fr;gap:18px}
+  .sec.flip .deuce{order:0}
+  .deuce{position:static}
+  .deuce img{max-width:130px;margin-inline:0}
+  .solver,.two,.tips,.race{grid-template-columns:1fr}
+  .rules{grid-template-columns:1fr}
+  .get{grid-template-columns:1fr}
+  .get img{width:140px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="/">Deducely</a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#basics">Basics</a><a href="#first-solve">First solve</a><a href="#classic">Classic</a><a href="#x-sudoku">X-Sudoku</a><a href="#killer">Killer</a><a href="#flurry">Flurry</a><a href="#samurai">Samurai</a><a href="#pencil">Pencil marks</a><a href="#tricks">Tricks</a>
+    </nav>
+  </header>
+
+  <div class="hero" id="top">
+    <div>
+      <div class="eyebrow">Learn to play</div>
+      <h1>Learn sudoku with Deuce</h1>
+      <p class="lede">Never solved one? Deuce will walk you through it, one cell at a time. Already a solver? Skip to the variant you're stuck on.</p>
+      <div class="chips">
+        <a class="chip classic" href="#classic">Classic</a><a class="chip x" href="#x-sudoku">X-Sudoku</a><a class="chip killer" href="#killer">Killer</a><a class="chip mini" href="#first-solve">Mini 6x6</a><a class="chip flurry" href="#flurry">Flurry</a><a class="chip samurai" href="#samurai">Samurai</a>
+      </div>
+    </div>
+    <img src="img/deuce-wave.png" alt="Deuce, a penguin in round glasses and an amber bow tie, waving hello" width="302" height="420">
+  </div>
+
+  <section id="basics">
+    <div class="sec flip">
+      <div class="stack">
+        <div class="eyebrow">Start here</div>
+        <h2>Three rules. That's the whole game.</h2>
+        <p>A sudoku is a grid split into rows, columns and boxes. Some cells start filled in. You fill the rest so that no digit ever repeats where it shouldn't.</p>
+        <div class="rules">
+          <div class="rule"><div class="grid small-grid" id="rule-row"></div><strong>Every row</strong><p>holds 1 to 9, each once.</p></div>
+          <div class="rule"><div class="grid small-grid" id="rule-col"></div><strong>Every column</strong><p>holds 1 to 9, each once.</p></div>
+          <div class="rule"><div class="grid small-grid" id="rule-box"></div><strong>Every 3x3 box</strong><p>holds 1 to 9, each once.</p></div>
+        </div>
+        <p class="say">No maths, no guessing. Every digit you place is one you can prove. If you're guessing, there's a clue you haven't spotted yet.</p>
+      </div>
+      <div class="deuce"><img src="img/deuce-point.png" alt="Deuce pointing" width="336" height="420"></div>
+    </div>
+  </section>
+
+  <section id="first-solve">
+    <div class="stack">
+      <div class="eyebrow">Your first solve</div>
+      <h2>Solve a Mini 6x6 with Deuce</h2>
+      <p>A Mini is the same game on a smaller board: digits 1 to 6, and boxes two rows tall and three columns wide. Press Next and Deuce places one digit at a time and tells you why.</p>
+      <div class="walk" data-walk="mini">
+          <div class="stack">
+            <div class="grid" role="img"></div>
+            <div class="bar" aria-hidden="true"><span></span></div>
+          </div>
+          <div class="walk-side">
+            <div class="walk-head"><img src="img/deuce-think.png" alt="Deuce thinking" width="260" height="420"><p class="say" aria-live="polite"></p></div>
+            <div class="controls">
+              <button type="button" data-act="back">Back</button>
+              <button type="button" class="primary" data-act="next">Next</button>
+              <button type="button" data-act="restart">Start over</button>
+              <span class="progress"></span>
+            </div>
+            <p style="color:var(--muted);font-size:.92rem">Amber is the cell Deuce is filling. Shaded cells are the ones he's looking at.</p>
+          </div>
+        </div>
+    </div>
+  </section>
+
+  <section id="classic">
+    <div class="sec flip">
+      <div class="deuce"><img src="img/deuce-point.png" alt="Deuce pointing" width="336" height="420"></div>
+      <div class="stack">
+        <div class="vhead classic"><div class="eyebrow" style="color:inherit;opacity:.8">Variant</div><h2>Classic</h2><p>The original 9x9. The other variants all build on it.</p></div>
+        <div class="two">
+          <div class="fact"><h3>How it plays</h3><p>Fill the 9x9 grid so every row, column and 3x3 box holds 1 to 9 once. Easy puzzles give you lots of starting digits. Expert puzzles give you very few.</p></div>
+          <div class="fact"><h3>Where to start</h3><p>Pick a digit that's already on the board a lot. Go box by box and ask where that digit can go. Rows and columns that already have it rule cells out.</p></div>
+        </div>
+        <h3>Finish a Classic with Deuce</h3>
+        <div class="walk" data-walk="classic">
+          <div class="stack">
+            <div class="grid" role="img"></div>
+            <div class="bar" aria-hidden="true"><span></span></div>
+          </div>
+          <div class="walk-side">
+            <div class="walk-head"><img src="img/deuce-think.png" alt="Deuce thinking" width="260" height="420"><p class="say" aria-live="polite"></p></div>
+            <div class="controls">
+              <button type="button" data-act="back">Back</button>
+              <button type="button" class="primary" data-act="next">Next</button>
+              <button type="button" data-act="restart">Start over</button>
+              <span class="progress"></span>
+            </div>
+            <p style="color:var(--muted);font-size:.92rem">Amber is the cell Deuce is filling. Shaded cells are the ones he's looking at.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="x-sudoku">
+    <div class="sec">
+      <div class="stack">
+        <div class="vhead x"><div class="eyebrow" style="color:inherit;opacity:.8">Variant</div><h2>X-Sudoku</h2><p>Classic, plus the two long diagonals.</p></div>
+        <div class="two">
+          <div class="fact"><h3>What's different</h3><p>Both corner-to-corner diagonals must also hold 1 to 9 once each. That's two extra groups to check, and two extra ways to find a digit.</p></div>
+          <div class="fact"><h3>How to play it</h3><p>Use every Classic trick, then scan the diagonals the same way you scan a row. The centre cell sits on both diagonals, so it has to fit five groups at once.</p></div>
+        </div>
+        <h3>Finish an X-Sudoku with Deuce</h3>
+        <div class="walk" data-walk="x">
+          <div class="stack">
+            <div class="grid" role="img"></div>
+            <div class="bar" aria-hidden="true"><span></span></div>
+          </div>
+          <div class="walk-side">
+            <div class="walk-head"><img src="img/deuce-think.png" alt="Deuce thinking" width="260" height="420"><p class="say" aria-live="polite"></p></div>
+            <div class="controls">
+              <button type="button" data-act="back">Back</button>
+              <button type="button" class="primary" data-act="next">Next</button>
+              <button type="button" data-act="restart">Start over</button>
+              <span class="progress"></span>
+            </div>
+            <p style="color:var(--muted);font-size:.92rem">Amber is the cell Deuce is filling. Shaded cells are the ones he's looking at.</p>
+          </div>
+        </div>
+        <p class="say">Diagonals are free clues. Check them first. Most people forget they're there.</p>
+      </div>
+      <div class="deuce"><img src="img/deuce-think.png" alt="Deuce thinking" width="260" height="420"></div>
+    </div>
+  </section>
+
+  <section id="killer">
+    <div class="sec flip">
+      <div class="deuce"><img src="img/deuce-smug.png" alt="Deuce with his flippers crossed, looking pleased with himself" width="234" height="420"></div>
+      <div class="stack">
+        <div class="vhead killer"><div class="eyebrow" style="color:inherit;opacity:.8">Variant</div><h2>Killer</h2><p>No starting digits at all. Just cages and sums.</p></div>
+        <div class="facts">
+          <div class="fact"><h3>What's different</h3><p>The board starts empty. Dashed outlines, called cages, group cells together, and the small number in the corner is what those cells add up to. Digits can't repeat inside a cage. Rows, columns and boxes still need 1 to 9 once each.</p></div>
+          <div class="fact"><h3>How to play it</h3><p>Start with cages that can only be made one way. Pencil those digits in, then let the normal rules do the rest. Each cage is tinted so you can tell neighbours apart.</p></div>
+        </div>
+        <h3>Finish a Killer with Deuce</h3>
+        <div class="walk" data-walk="killer">
+          <div class="stack">
+            <div class="grid" role="img"></div>
+            <div class="bar" aria-hidden="true"><span></span></div>
+          </div>
+          <div class="walk-side">
+            <div class="walk-head"><img src="img/deuce-think.png" alt="Deuce thinking" width="260" height="420"><p class="say" aria-live="polite"></p></div>
+            <div class="controls">
+              <button type="button" data-act="back">Back</button>
+              <button type="button" class="primary" data-act="next">Next</button>
+              <button type="button" data-act="restart">Start over</button>
+              <span class="progress"></span>
+            </div>
+            <p style="color:var(--muted);font-size:.92rem">Amber is the cell Deuce is filling. Shaded cells are the ones he's looking at.</p>
+          </div>
+        </div>
+        <h3>Cages with only one answer</h3>
+        <div class="cages">
+          <div class="cage-card"><div class="cage"><span class="sum">3</span><div>1</div><div>2</div></div><p><b>3 in two cells</b> can only be 1 and 2.</p></div>
+          <div class="cage-card"><div class="cage"><span class="sum">17</span><div>8</div><div>9</div></div><p><b>17 in two cells</b> can only be 8 and 9.</p></div>
+          <div class="cage-card"><div class="cage"><span class="sum">6</span><div>1</div><div>2</div><div>3</div></div><p><b>6 in three cells</b> can only be 1, 2 and 3.</p></div>
+          <div class="cage-card"><div class="cage"><span class="sum">4</span><div>1</div><div>3</div></div><p><b>4 in two cells</b> is 1 and 3. Never 2 and 2.</p></div>
+        </div>
+        <p class="say">Every row, column and box adds up to 45. When all but one cell of a box is covered by cages you know, that last cell is 45 minus the rest. Looks smart. Is smart.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="flurry">
+    <div class="sec">
+      <div class="stack">
+        <div class="vhead flurry"><div class="eyebrow" style="color:inherit;opacity:.8">Variant</div><h2>Flurry (Sudoku Mine)</h2><p>No digits at all. Find the hidden snowflakes. Based on Sudoku Mine.</p></div>
+        <div class="two">
+          <div class="fact"><h3>What's different</h3><p>You don't place numbers. You find 27 snowflakes, exactly 3 in every row, column and 3x3 box. A number tells you how many of the 8 cells around it hold a snowflake. Numbered cells never hold one.</p></div>
+          <div class="fact"><h3>How to play it</h3><p>Mark the cells you know are safe with a dot and the ones you know hide a snowflake with a flake. Look for numbers whose open cells must all be snowflakes, and rows or boxes that already have their 3.</p></div>
+        </div>
+        <h3>Solve a Flurry with Deuce</h3>
+        <div class="walk" data-walk="flurry">
+          <div class="stack">
+            <div class="grid" role="img"></div>
+            <div class="bar" aria-hidden="true"><span></span></div>
+          </div>
+          <div class="walk-side">
+            <div class="walk-head"><img src="img/deuce-think.png" alt="Deuce thinking" width="260" height="420"><p class="say" aria-live="polite"></p></div>
+            <div class="controls">
+              <button type="button" data-act="back">Back</button>
+              <button type="button" class="primary" data-act="next">Next</button>
+              <button type="button" data-act="restart">Start over</button>
+              <span class="progress"></span>
+            </div>
+            <p style="color:var(--muted);font-size:.92rem">Amber is the cell Deuce is filling. Shaded cells are the ones he's looking at.</p>
+          </div>
+        </div>
+        <p class="say">Dots are free. Mark every cell you know is safe and the snowflakes start to show themselves.</p>
+      </div>
+      <div class="deuce"><img src="img/deuce-think.png" alt="Deuce thinking" width="260" height="420"></div>
+    </div>
+  </section>
+
+  <section id="samurai">
+    <div class="sec flip">
+      <div class="deuce"><img src="img/deuce-point.png" alt="Deuce pointing" width="336" height="420"></div>
+      <div class="stack">
+        <div class="vhead samurai"><div class="eyebrow" style="color:inherit;opacity:.8">Variant</div><h2>Samurai</h2><p>Five Classic grids, joined at the corners.</p></div>
+        <div class="two">
+          <div class="fact"><h3>What's different</h3><p>Four grids sit at the corners and one in the middle. The middle grid shares one 3x3 box with each corner grid. Every grid follows the Classic rules, so the shared boxes have to work for both grids at once.</p></div>
+          <div class="fact"><h3>How to play it</h3><p>Start in the shaded shared boxes. They get help from two grids, so they fill first.</p></div>
+        </div>
+        <h3>Solve a Samurai with Deuce</h3>
+        <div class="walk" data-walk="samurai">
+          <div class="stack">
+            <div class="sscroll"><div class="sgrid" role="img"></div></div>
+            <div class="bar" aria-hidden="true"><span></span></div>
+          </div>
+          <div class="walk-side">
+            <div class="walk-head"><img src="img/deuce-think.png" alt="Deuce thinking" width="260" height="420"><p class="say" aria-live="polite"></p></div>
+            <div class="controls">
+              <button type="button" data-act="back">Back</button>
+              <button type="button" class="primary" data-act="next">Next</button>
+              <button type="button" data-act="restart">Start over</button>
+              <span class="progress"></span>
+            </div>
+            <p style="color:var(--muted);font-size:.92rem">Amber is the cell Deuce is filling. Shaded cells are the ones he's looking at. Tinted boxes belong to two grids.</p>
+          </div>
+        </div>
+        <p class="say">It's big, but it's never harder than its hardest grid. Finish one grid, then use its corner box to break into the next.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="pencil">
+    <div class="sec flip">
+      <div class="deuce"><img src="img/deuce-think.png" alt="Deuce thinking" width="260" height="420"></div>
+      <div class="stack">
+        <div class="eyebrow">Pencil marks</div>
+        <h2>How Deuce uses pencil marks</h2>
+        <div class="two">
+          <div class="fact"><h3>What they are</h3><p>Small notes in a cell listing the digits it could still be. They don't count as answers, so they never cost you time or mistakes.</p></div>
+          <div class="fact"><h3>How to use them</h3><p>Write marks small in the corner of a cell, on paper or in your app's pencil mode. Each time you place a digit, cross it off the marks in the same row, column and box.</p></div>
+        </div>
+        <div class="walk" data-walk="pencil">
+          <div class="stack">
+            <div class="grid" role="img"></div>
+            <div class="bar" aria-hidden="true"><span></span></div>
+          </div>
+          <div class="walk-side">
+            <div class="walk-head"><img src="img/deuce-think.png" alt="Deuce thinking" width="260" height="420"><p class="say" aria-live="polite"></p></div>
+            <div class="controls">
+              <button type="button" data-act="back">Back</button>
+              <button type="button" class="primary" data-act="next">Next</button>
+              <button type="button" data-act="restart">Start over</button>
+              <span class="progress"></span>
+            </div>
+            <p style="color:var(--muted);font-size:.92rem">Amber is the cell Deuce is filling. Shaded cells are the ones he's looking at.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tricks">
+    <div class="sec flip">
+      <div class="deuce"><img src="img/deuce-think.png" alt="Deuce thinking" width="260" height="420"></div>
+      <div class="stack">
+        <div class="eyebrow">Tricks Deuce uses</div>
+        <h2>Four habits that solve most puzzles</h2>
+        <div class="tips">
+          <div class="tip"><div class="pencil" aria-hidden="true"><span>1</span><span></span><span>3</span><span></span><span></span><span></span><span>7</span><span></span><span></span></div><h3>Pencil marks</h3><p>Jot the digits a cell could still be, one box or row at a time. When a cell is down to one mark, place it. <a href="#pencil">Watch Deuce do it.</a></p></div>
+          <div class="tip"><h3>Only one digit fits here</h3><p>Look at one empty cell. Cross off every digit already in its row, column and box. If one digit is left, that's the answer.</p></div>
+          <div class="tip"><h3>Only one place for this digit</h3><p>Look at one box, row or column and one digit it's missing. If every other spot is blocked, the digit goes in the last one.</p></div>
+          <div class="tip"><h3>Pairs</h3><p>Two cells in a row that can only be the same two digits, say 4 and 8, use up the 4 and the 8. Cross those digits off everywhere else in that row.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section id="race" class="get" aria-labelledby="race-h">
+    <div class="get-main">
+      <div class="eyebrow" style="color:#fff;opacity:.75">Play daily</div>
+      <h2 id="race-h">Ready to race? Try Deducely.</h2>
+      <p>Six daily puzzles, the same for everyone, every day. No ads, ever.</p>
+      <div class="race">
+        <div><b>One puzzle per variant</b><p>Classic, X-Sudoku, Killer, Mini 6x6, Flurry and Samurai. Difficulty climbs through the week.</p></div>
+        <div><b>Your first finish counts</b><p>Play it again as much as you like. Only your first finish ranks.</p></div>
+        <div><b>Mistakes cost 5 seconds</b><p>Each wrong digit adds 5 seconds to your ranked time. Undoing it doesn't take the time back.</p></div>
+        <div><b>Climb the ranks</b><p>Faster finishes earn more points. Your last 30 days decide your rank.</p><div class="tiers"><span>Pencil</span><span>Apprentice</span><span>Deducer</span><span>Logician</span><span>Savant</span><span>Oracle</span><span>Grandmaster</span></div></div>
+      </div>
+      <span class="soon">Coming soon to Google Play</span>
+    </div>
+    <img src="img/deuce-peek.png" alt="Deuce peeking over an edge" width="384" height="330">
+  </section>
+  <footer><a href="/">Deducely</a> · <a href="/privacy/">Privacy</a> · <a href="mailto:hello@boultongames.com">hello@boultongames.com</a> · &copy; 2026 Boulton Games</footer>
+</div>
+
+<script>
+(function(){
+  const FLURRY={"p":[-1,-1,-1,-1,3,-1,-1,0,-1,-1,-1,3,-1,-1,-1,3,-1,-1,-1,-1,-1,-1,3,-1,-1,-1,-1,-1,-1,1,-1,-1,3,4,6,-1,-1,3,2,2,3,-1,-1,3,-1,-1,2,2,-1,-1,4,3,-1,-1,2,-1,-1,5,-1,3,2,-1,-1,1,-1,-1,-1,-1,-1,4,3,-1,-1,-1,-1,3,-1,-1,-1,-1,-1],"steps":[[[6,8,16,17],2,"This 0 means none of the cells around it hold a snowflake. They're all safe.",[15],[7]],[[24,25,26,35,42,44],1,"This 6 has exactly 6 open cells around it, so every one is a snowflake.",[33,43],[34]],[[52,53],2,"This 3 already has 3 snowflakes around it, so every other cell around it is safe.",[33,34,35,42,44,51],[43]],[[41,49,58],1,"This 4 needs 3 more snowflakes and has exactly 3 open cells around it. They're all snowflakes.",[40,42,51,59,60],[50]],[[23,31],2,"This 3 already has 3 snowflakes around it, so every other cell around it is safe.",[22,24,33,40,41,42],[32]],[[61],1,"This 3 needs 1 more snowflake and has exactly 1 open cell around it. It's a snowflake.",[41,42,43,50,52,59,60],[51]],[[68],1,"This 2 needs 1 more snowflake and has exactly 1 open cell around it. It's a snowflake.",[50,51,52,59,61,69,70],[60]],[[67],2,"This 3 already has 3 snowflakes around it, so every other cell around it is safe.",[49,50,51,58,60,68,69],[59]],[[18,19,20,21],2,"Row 3 already has its 3 snowflakes, so everything else in it is safe.",[22,23,24,25,26],[]],[[36],2,"Row 5 already has its 3 snowflakes, so everything else in it is safe.",[37,38,39,40,41,42,43,44],[]],[[27,28,45],1,"This 3 has exactly 3 open cells around it, so every one is a snowflake.",[29,36,38,46,47],[37]],[[30],2,"This 1 already has 1 snowflake around it, so every other cell around it is safe.",[19,20,21,28,37,38,39],[29]],[[12,13,14],1,"This 3 has exactly 3 open cells around it, so every one is a snowflake.",[21,23,30,31,32],[22]],[[3,5],2,"This 3 already has 3 snowflakes around it, so every other cell around it is safe.",[12,13,14],[4]],[[48],1,"This 2 needs 1 more snowflake and has exactly 1 open cell around it. It's a snowflake.",[28,29,30,37,39,46,47],[38]],[[0,1,2],1,"Row 1 needs 3 more snowflakes and has exactly 3 open cells left. They're all snowflakes.",[3,4,5,6,7,8],[]],[[10],2,"This 3 already has 3 snowflakes around it, so every other cell around it is safe.",[1,2,3,12,19,20,21],[11]],[[9],2,"Row 2 already has its 3 snowflakes, so everything else in it is safe.",[10,11,12,13,14,15,16,17],[]],[[72],2,"Column 1 already has its 3 snowflakes, so everything else in it is safe.",[0,9,18,27,36,45,54,63],[]],[[66],1,"Column 4 needs 1 more snowflake and has exactly 1 open cell left. It's a snowflake.",[3,12,21,30,39,48,57,75],[]],[[76],2,"Column 5 already has its 3 snowflakes, so everything else in it is safe.",[4,13,22,31,40,49,58,67],[]],[[65,74],1,"This 3 needs 2 more snowflakes and has exactly 2 open cells around it. They're all snowflakes.",[66,67,76],[75]],[[56],2,"This 5 already has 5 snowflakes around it, so every other cell around it is safe.",[47,48,49,58,65,66,67],[57]],[[55],1,"This 2 needs 1 more snowflake and has exactly 1 open cell around it. It's a snowflake.",[36,37,38,45,47,54,56],[46]],[[64],2,"This 2 already has 2 snowflakes around it, so every other cell around it is safe.",[45,46,55,63],[54]],[[73],2,"This 1 already has 1 snowflake around it, so every other cell around it is safe.",[54,55,64,72],[63]],[[62],2,"Row 7 already has its 3 snowflakes, so everything else in it is safe.",[54,55,56,57,58,59,60,61],[]],[[71],2,"Row 8 already has its 3 snowflakes, so everything else in it is safe.",[63,64,65,66,67,68,69,70],[]],[[77],2,"Column 6 already has its 3 snowflakes, so everything else in it is safe.",[5,14,23,32,41,50,59,68],[]],[[78,79],1,"This 4 needs 2 more snowflakes and has exactly 2 open cells around it. They're all snowflakes.",[59,60,61,68,70,77],[69]],[[80],2,"This 3 already has 3 snowflakes around it, so every other cell around it is safe.",[60,61,62,69,71,78,79],[70]]]};
+  const SAMURAI={"n":21,"p":[4,0,2,6,0,7,0,0,9,-1,-1,-1,4,0,0,5,1,0,8,0,0,7,0,0,0,0,3,6,0,0,-1,-1,-1,7,0,0,0,0,2,0,9,5,0,0,0,0,5,0,0,0,0,-1,-1,-1,0,0,0,0,4,9,2,0,6,0,0,1,9,6,0,0,0,0,-1,-1,-1,1,0,0,0,7,0,0,2,0,3,7,0,0,0,0,0,2,0,-1,-1,-1,0,0,6,1,2,0,0,0,0,9,6,5,0,7,0,4,0,0,-1,-1,-1,0,0,0,0,0,0,0,0,9,8,0,0,0,3,1,5,0,0,0,0,0,0,0,0,2,5,0,7,6,4,0,2,3,8,9,0,0,0,0,9,0,0,6,0,2,4,9,0,0,8,1,0,0,0,5,0,0,8,0,0,6,0,1,0,0,0,6,0,1,0,0,0,-1,-1,-1,-1,-1,-1,4,0,0,2,0,0,3,8,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,0,0,1,0,0,5,4,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,9,0,0,0,4,3,7,0,0,-1,-1,-1,-1,-1,-1,0,4,0,3,0,6,2,0,0,0,9,0,0,0,6,0,0,9,2,0,0,0,2,0,0,0,0,3,0,0,4,6,0,0,0,5,0,4,0,9,8,0,0,8,0,5,9,0,0,0,6,0,0,0,8,0,3,7,0,5,1,4,0,2,0,0,0,6,4,0,0,8,-1,-1,-1,0,3,0,0,0,4,7,1,0,0,0,7,0,0,0,0,2,1,-1,-1,-1,0,0,0,0,0,0,0,9,0,8,0,0,0,5,0,0,0,0,-1,-1,-1,0,0,0,0,9,0,0,6,3,4,0,6,0,0,5,0,0,0,-1,-1,-1,0,8,0,0,3,0,0,7,0,0,7,2,8,0,0,0,0,3,-1,-1,-1,0,0,4,2,1,0,3,5,0,0,5,0,0,0,3,0,7,0,-1,-1,-1,0,0,0,4,0,7,0,2,0],"steps":[[307,9,"This shaded box belongs to the centre grid and the bottom-right grid, so 9s in either grid's rows and columns count. It still needs a 9. The highlighted 9s block every other empty cell, so the 9 goes here.",[264,265,285,286],[262,291]],[244,6,"The centre grid's middle-right box still needs a 6. The highlighted 6s block every other empty cell there, so the 6 goes here.",[203,222,245],[159,266]],[245,1,"Look at row 6, column 9 of the centre grid. Its row, column and box already have 2, 3, 4, 5, 6, 7, 8, 9. The only digit left is 1.",[161,201,202,223,224,237,241,242,243,244,266,287,308],[161,201,202,223,224,237,243,244]],[301,4,"This shaded box belongs to the centre grid and the bottom-left grid, so 4s in either grid's rows and columns count. It still needs a 4. The highlighted 4s block every other empty cell, so the 4 goes here.",[259,260,280,281,300],[195,253,282]],[299,2,"The bottom-left grid's top-middle box still needs a 2. The highlighted 2s block every other empty cell there, so the 2 goes here.",[256,276,277,278],[258,274]],[340,3,"The bottom-left grid's centre box still needs a 3. The highlighted 3s block every other empty cell there, so the 3 goes here.",[318,339,341,360,362],[255,425]],[-1,[[13,2],[14,9],[17,6],[34,6],[39,4],[35,1],[47,9],[48,2],[57,7],[61,1],[63,2],[78,9],[81,6],[90,9],[92,6],[89,5],[97,9],[108,3],[110,2],[68,8],[64,4],[86,8],[117,2],[121,6],[123,1],[129,7],[24,2],[133,6],[134,2],[128,4],[127,9],[23,9],[137,4],[138,9],[139,1],[140,8],[143,3],[37,3],[36,8],[120,3],[147,5],[152,6],[155,4],[157,8],[158,5],[160,3],[164,7],[165,5],[170,7],[44,6],[168,6],[42,1],[87,1],[45,4],[28,4],[88,4],[169,1],[172,2],[173,4],[175,9],[176,3],[136,3],[135,7],[178,2],[180,5],[181,4],[118,7],[122,8],[182,7],[184,8],[186,9],[102,3],[54,3],[55,8],[56,5],[76,5],[77,3],[80,4],[83,8],[96,8],[101,5],[103,4],[19,7],[20,3],[104,7],[119,4],[124,5],[187,3],[188,2],[197,1],[200,6],[203,9],[216,6],[217,3],[221,9],[199,7],[154,7],[50,7],[69,7],[6,3],[43,3],[49,8],[70,3],[7,5],[4,1],[1,8],[22,5],[25,8],[29,1],[71,5],[112,1],[113,8],[153,1],[196,5],[218,7],[219,8],[222,2],[238,2],[239,8],[240,5],[260,5],[261,3],[264,4],[259,1],[256,8],[252,7],[254,9],[263,8],[265,7],[267,1],[268,8],[271,3],[272,5],[273,6],[275,5],[280,8],[281,9],[284,7],[285,1],[286,2],[293,7],[294,3],[296,1],[300,7],[303,1],[304,5],[305,2],[310,2],[314,6],[318,7],[278,7],[316,1],[336,5],[341,8],[342,4],[337,6],[339,9],[352,7],[358,9],[359,4],[317,3],[360,2],[362,1],[364,3],[363,6],[365,7],[371,7],[379,3],[382,7],[384,8],[381,1],[277,1],[276,4],[385,9],[321,9],[322,5],[386,2],[393,9],[390,5],[392,2],[398,1],[356,4],[335,2],[370,4],[349,5],[350,1],[329,8],[327,9],[348,6],[353,2],[290,3],[288,6],[331,6],[330,5],[351,3],[354,8],[369,2],[372,8],[374,1],[375,5],[396,4],[395,6],[403,4],[404,9],[405,5],[399,1],[406,6],[411,7],[412,6],[416,8],[419,9],[420,9],[422,8],[423,6],[424,2],[426,1],[428,4]],"I keep going the same way: find a box, row or column with only one answer, fill it, look again. Shaded boxes first, they get clues from two grids. That fills in 217 more cells. Here are my last six.",[],[]],[436,5,"The bottom-right grid's bottom-middle box has one empty cell left, and the only digit it is missing is 5.",[],[]],[438,6,"The bottom-right grid's bottom-right box still needs a 6. The highlighted 6 blocks every other empty cell there, so the 6 goes here.",[440],[314]],[440,8,"The bottom-right grid's bottom-right box has one empty cell left, and the only digit it is missing is 8.",[],[]],[432,3,"The bottom-right grid's bottom-left box still needs a 3. The highlighted 3s block every other empty cell there, so the 3 goes here.",[433,434],[308,328]],[433,1,"The bottom-right grid's bottom-left box still needs a 1. The highlighted 1 blocks every other empty cell there, so the 1 goes here.",[434],[350]],[434,9,"The bottom-right grid's bottom-left box has one empty cell left, and the only digit it is missing is 9.",[],[]]]};
+  const W = {"mini":{"n":6,"br":2,"bc":3,"diag":false,"p":[0,0,6,2,4,0,0,0,0,6,0,0,0,0,4,1,5,0,0,0,0,0,2,4,2,0,5,4,0,3,1,0,0,0,0,0],"steps":[[10,3,"The top-right box still needs a 3. The highlighted 3 blocks every other empty cell there, so the 3 goes here.",[5,11],[29]],[17,6,"Look at row 3, column 6. Its row, column and box already have 1, 2, 3, 4, 5. The only digit left is 6.",[35,5,11,12,13,21],[14,15,16,22,23,29]],[13,2,"The middle-left box still needs a 2. The highlighted 2s block every other empty cell there, so the 2 goes here.",[12,18,19,20],[22,24]],[12,3,"Look at row 3, column 1. Its row, column and box already have 1, 2, 4, 5, 6. The only digit left is 3.",[0,6,18,19,20],[13,14,15,16,17,24,30]],[8,2,"The top-left box still needs a 2. The highlighted 2s block every other empty cell there, so the 2 goes here.",[0,1,6,7],[3,13,24]],[0,5,"Look at row 1, column 1. Its row, column and box already have 1, 2, 3, 4, 6. The only digit left is 5.",[1,5,6,7,18],[2,3,4,8,12,24,30]],[1,3,"The top-left box still needs a 3. The highlighted 3 blocks every other empty cell there, so the 3 goes here.",[6,7],[10]],[5,1,"Look at row 1, column 6. Its row, column and box already have 2, 3, 4, 5, 6. The only digit left is 1.",[35,11],[0,1,2,3,4,9,10,17,23,29]],[7,1,"The top-left box still needs a 1. The highlighted 1 blocks every other empty cell there, so the 1 goes here.",[6],[30]],[6,4,"Look at row 2, column 1. Its row, column and box already have 1, 2, 3, 5, 6. The only digit left is 4.",[11,18],[0,1,2,7,8,9,10,12,24,30]],[11,5,"The top-right box has one empty cell left, and the only digit it is missing is 5.",[],[]],[18,6,"Look at row 4, column 1. Its row, column and box already have 1, 2, 3, 4, 5. The only digit left is 6.",[19,20,21],[0,6,12,13,14,22,23,24,30]],[20,1,"The middle-left box still needs a 1. The highlighted 1 blocks every other empty cell there, so the 1 goes here.",[19],[7]],[19,5,"Look at row 4, column 2. Its row, column and box already have 1, 2, 3, 4, 6. The only digit left is 5.",[21,25,31],[1,7,12,13,14,18,20,22,23]],[21,3,"The middle-right box has one empty cell left, and the only digit it is missing is 3.",[],[]],[25,6,"Look at row 5, column 2. Its row, column and box already have 1, 2, 3, 4, 5. The only digit left is 6.",[32,28,31],[1,7,13,19,24,26,27,29,30]],[32,3,"The bottom-left box still needs a 3. The highlighted 3 blocks every other empty cell there, so the 3 goes here.",[31],[1]],[28,1,"Look at row 5, column 5. Its row, column and box already have 2, 3, 4, 5, 6. The only digit left is 1.",[33,34,35],[4,10,16,22,24,25,26,27,29]],[31,4,"The bottom-left box has one empty cell left, and the only digit it is missing is 4.",[],[]],[33,5,"Look at row 6, column 4. Its row, column and box already have 1, 2, 3, 4, 6. The only digit left is 5.",[34,35],[32,3,9,15,21,27,28,29,30,31]],[35,2,"The bottom-right box still needs a 2. The highlighted 2 blocks every other empty cell there, so the 2 goes here.",[34],[22]],[34,6,"Look at row 6, column 5. Its row, column and box already have 1, 2, 3, 4, 5. The only digit left is 6.",[],[32,33,35,4,10,16,22,27,28,29,30,31]]]},"classic":{"n":9,"br":3,"bc":3,"diag":false,"p":[2,1,0,0,0,6,0,0,0,6,0,0,0,3,0,0,2,4,0,5,0,4,0,0,6,0,7,0,0,0,6,0,0,5,4,1,0,0,5,0,8,0,0,7,0,0,6,0,3,5,1,0,0,0,0,3,0,5,6,0,0,0,2,0,2,0,1,0,0,0,0,3,0,0,1,0,0,0,0,0,9],"steps":[[2,4,"The top-left box still needs a 4. The highlighted 4s block every other empty cell there, so the 4 goes here.",[10,11,18,20],[17,21]],[44,6,"Look at row 5, column 9. Its row, column and box already have 1, 2, 3, 4, 5, 7, 8, 9. The only digit left is 6.",[8,36,37,39,41,42,51,52,53],[71,80,17,26,33,34,35,38,40,43,62]],[15,1,"Row 2 still needs a 1. The highlighted 1s block every other empty cell there, so the 1 goes here.",[10,11,12,14],[1,50,66]],[22,1,"The top-middle box still needs a 1. The highlighted 1s block every other empty cell there, so the 1 goes here.",[3,4,12,14,23],[1,15,50,66]],[53,8,"Look at row 6, column 9. Its row, column and box already have 1, 2, 3, 4, 5, 6, 7, 9. The only digit left is 8.",[8,42,45,47,51,52],[71,80,17,26,33,34,35,43,44,46,48,49,50,62]],[14,5,"Row 2 still needs a 5. The highlighted 5s block every other empty cell there, so the 5 goes here.",[10,11,12],[19,57]],[-1,[[23,2],[8,5],[36,1],[41,4],[37,9],[42,3],[45,4],[39,2],[7,3],[51,2],[47,7],[29,2],[10,7],[28,8],[27,3],[20,3],[52,9],[18,9],[11,8],[12,9],[6,9],[3,8],[4,7],[25,8],[32,7],[31,9],[61,1],[73,4],[56,9],[60,4],[65,6],[59,8],[54,7],[76,2],[67,4],[69,7],[77,3],[68,9]],"I keep going the same way: find a box, row or column with only one answer, fill it, look again. That fills in 38 more cells. Here are my last six.",[],[]],[63,8,"Row 8 still needs an 8. The highlighted 8 blocks every other empty cell there, so the 8 goes here.",[70],[25]],[72,5,"The bottom-left box has one empty cell left, and the only digit it is missing is 5.",[],[]],[70,5,"Look at row 8, column 8. Its row, column and box already have 1, 2, 3, 4, 6, 7, 8, 9. The only digit left is 5.",[78,79],[64,65,66,67,68,69,71,7,16,80,25,34,43,52,60,61,62,63]],[79,6,"Row 9 still needs a 6. The highlighted 6s block every other empty cell there, so the 6 goes here.",[75,78],[24,30]],[75,7,"The bottom-middle box has one empty cell left, and the only digit it is missing is 7.",[],[]],[78,8,"Look at row 9, column 7. Its row, column and box already have 1, 2, 3, 4, 5, 6, 7, 9. The only digit left is 8.",[],[69,6,70,72,73,74,75,76,77,71,79,80,15,24,33,42,51,60,61,62]]]},"x":{"n":9,"br":3,"bc":3,"diag":true,"p":[0,7,0,2,1,0,0,0,4,0,8,0,0,0,9,0,0,0,0,0,1,3,4,0,0,5,7,4,5,0,0,0,1,0,9,0,8,0,7,0,0,0,0,0,0,0,0,0,8,0,4,7,0,1,3,0,0,1,0,2,0,0,0,0,0,8,0,0,0,0,2,5,0,0,9,4,6,0,8,0,0],"steps":[[30,7,"The diagonal from top-left to bottom-right still needs a 7. The highlighted 7s block every other empty cell there, so the 7 goes here.",[0,40,60,80],[1,26,38,51]],[64,6,"Look at row 8, column 2. Its row, column, box and diagonal already have 1, 2, 3, 4, 5, 7, 8, 9. The only digit left is 6.",[66,67,68,69,73,72,16,19,24,37,40,46,55,56,63],[65,70,71,1,10,74,8,28,32,48,54]],[72,7,"The diagonal from top-right to bottom-left still needs a 7. The highlighted 7s block every other empty cell there, so the 7 goes here.",[16,24,40,56],[26,30,38]],[16,3,"Look at row 2, column 8. Its row, column, box and diagonal already have 1, 2, 4, 5, 6, 7, 8, 9. The only digit left is 3.",[7,6,9,11,12,13,15,79,17,24,40,43,52,56,61],[64,70,10,14,25,26,32,34,8,72,48]],[80,3,"The diagonal from top-left to bottom-right still needs a 3. The highlighted 3s block every other empty cell there, so the 3 goes here.",[0,40,60],[16,54]],[52,6,"Look at row 6, column 8. Its row, column and box already have 1, 2, 3, 4, 5, 7, 8, 9. The only digit left is 6.",[7,79,33,35,42,43,44,45,46,47,49,61],[70,16,25,34,48,50,51,53]],[-1,[[24,2],[7,8],[40,9],[17,6],[0,5],[5,6],[60,6],[2,3],[56,5],[6,9],[9,2],[11,4],[12,5],[13,7],[15,1],[19,9],[18,6],[23,8],[33,3],[31,2],[29,6],[35,8],[39,6],[43,4],[42,5],[41,3],[44,2],[37,1],[45,9],[47,2],[46,3],[49,5],[55,4],[58,8],[61,7],[62,9],[63,1],[66,9]],"I keep going the same way: find a box, row or column with only one answer, fill it, look again. That fills in 38 more cells. Here are my last six.",[],[]],[67,3,"Look at row 8, column 5. Its row, column and box already have 1, 2, 4, 5, 6, 7, 8, 9. The only digit left is 3.",[68,69,77],[64,65,66,70,71,4,75,76,13,22,31,40,49,57,58,59,63]],[68,7,"Look at row 8, column 6. Its row, column and box already have 1, 2, 3, 4, 5, 6, 8, 9. The only digit left is 7.",[69,77],[64,65,66,67,70,71,5,75,76,14,23,32,41,50,57,58,59,63]],[69,4,"Look at row 8, column 7. Its row, column and box already have 1, 2, 3, 5, 6, 7, 8, 9. The only digit left is 4.",[79],[64,65,66,67,68,70,71,6,78,15,80,24,33,42,51,60,61,62,63]],[73,2,"Look at row 9, column 2. Its row, column and box already have 1, 3, 4, 5, 6, 7, 8, 9. The only digit left is 2.",[77,79],[64,1,65,72,74,75,76,78,80,10,19,28,37,46,54,55,56,63]],[77,5,"Look at row 9, column 6. Its row, column and box already have 1, 2, 3, 4, 6, 7, 8, 9. The only digit left is 5.",[79],[66,67,68,5,72,73,74,75,76,78,80,14,23,32,41,50,57,58,59]],[79,1,"Look at row 9, column 8. Its row, column and box already have 2, 3, 4, 5, 6, 7, 8, 9. The only digit left is 1.",[],[69,70,7,72,73,74,75,76,77,78,71,80,16,25,34,43,52,60,61,62]]]},"killer":{"n":9,"br":3,"bc":3,"diag":false,"p":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"cages":[[[5],9],[[25,26],9],[[18,27,36],20],[[37,38],5],[[0,1],8],[[54],1],[[56,57,65],9],[[32,33,42],14],[[66],9],[[46,47,55],16],[[53,62],7],[[21,30],9],[[6],8],[[49,58],14],[[64,72,73],15],[[50,51,59],16],[[2,3],7],[[34,35],11],[[11,20],15],[[60,61],15],[[44],8],[[22],7],[[14,15],11],[[10,19],5],[[39,40,41],18],[[79,80],12],[[52],7],[[7,8,16],18],[[9],2],[[17],1],[[63],8],[[69,70,71],13],[[4,13],7],[[45],5],[[28,29],17],[[77,78],5],[[23,24],5],[[67,68],4],[[12],8],[[48],4],[[31],2],[[43],1],[[76],8],[[75],7],[[74],5]],"steps":[[-1,[[5,9],[54,1],[66,9],[6,8],[44,8],[22,7],[52,7],[9,2],[17,1],[63,8],[45,5],[12,8],[48,4],[31,2],[43,1],[76,8],[75,7],[74,5]],"Start with the free ones. A cage with only one cell is just its total. This puzzle has 18 of them, so that's 18 digits before any thinking.",[],[]],[1,5,"The top-left box still needs a 5. The highlighted 5s block every other empty cell there, so the 5 goes here.",[0,2,10,11,18,19,20],[45,74]],[0,3,"This cage adds up to 8. The other cell is 5, so this one is 8 minus 5, which is 3.",[1],[]],[10,4,"This cell's cage totals 5 over 2 cells, so it can only use 1, 2, 3, 4. Its row, column and box already have 1, 2, 3, 5, 8. The only digit that fits is 4.",[19],[1,0,9,12,17]],[19,1,"This cage adds up to 5. The other cell is 4, so this one is 5 minus 4, which is 1.",[10],[]],[2,6,"This cell's cage totals 7 over 2 cells, so it can only use 1, 2, 3, 4, 5, 6. Its row, column and box already have 1, 2, 3, 4, 5, 8, 9. The only digit that fits is 6.",[3],[0,1,5,6,9,74,10,19]],[-1,[[3,1],[4,4],[13,3],[7,2],[8,7],[16,9],[11,7],[20,8],[18,9],[23,2],[24,3],[29,9],[28,8],[67,1],[68,3],[77,4],[78,1],[72,6],[73,2],[64,7],[37,3],[38,2],[46,6],[47,1],[55,9],[49,9],[58,5],[40,6],[39,5],[41,7],[21,6],[30,3],[14,5],[15,6],[32,1],[36,4],[27,7],[42,9],[33,4],[50,8],[51,2],[59,6],[53,3],[62,4],[26,5],[25,4],[35,6],[34,5],[56,3],[57,2],[65,4],[60,7]],"I keep going the same way: cages with one cell left, and digits that only fit one place. That fills in 52 more cells. Here are my last six.",[],[]],[61,8,"This cage adds up to 15. The other cell is 7, so this one is 15 minus 7, which is 8.",[60],[]],[69,5,"Look at row 8, column 7. Its row, column and box already have 1, 2, 3, 4, 6, 7, 8, 9. The only digit left is 5.",[70,71,79,80],[64,65,66,67,68,6,78,15,24,33,42,51,60,61,62,63]],[70,6,"Look at row 8, column 8. Its row, column, box and cage already have 1, 2, 3, 4, 5, 7, 8, 9. The only digit left is 6.",[71,79,80],[64,65,66,67,68,69,7,78,16,25,34,43,52,60,61,62,63]],[71,2,"This cage adds up to 13. The other cells make 5 + 6 = 11, so the last cell is 13 minus 11, which is 2.",[69,70],[]],[79,3,"Look at row 9, column 8. Its row, column and box already have 1, 2, 4, 5, 6, 7, 8, 9. The only digit left is 3.",[80],[69,70,7,72,73,74,75,76,77,78,71,16,25,34,43,52,60,61,62]],[80,9,"This cage adds up to 12. The other cell is 3, so this one is 12 minus 3, which is 9.",[79],[]]]}};
+  const INTRO = {
+    mini: "Here's a Mini with 14 digits filled in. Every row, column and box needs 1 to 6 once. Press Next and I'll show you the first one.",
+    classic: "A fresh Classic, straight from the start. This is where most people freeze, so watch where I look first.",
+    x: "A fresh X-Sudoku. The tinted diagonals need 1 to 9 once each too, and they are the best place to start. Watch.",
+    flurry: "A whole Flurry, from the start. Numbers count the snowflakes in the 8 cells around them. Every row, column and box hides exactly 3. Press Next.",
+    samurai: "A whole Samurai with 140 digits to start. Five grids, 229 empty cells. The tinted boxes belong to two grids at once, and that is where the best clues hide. Press Next.",
+    killer: "A brand-new Killer. The board is completely empty. Each dashed cage shows its total in the corner. So where do you even start?"
+  };
+  const DONE = " That's the last one. Solved!";
+
+  function build(el, n, br, bc){
+    el.style.gridTemplateColumns = "repeat("+n+",1fr)";
+    const cells=[];
+    for(let i=0;i<n*n;i++){
+      const r=Math.floor(i/n), c=i%n, d=document.createElement("div");
+      d.className="cell";
+      if((c+1)%bc===0 && c<n-1) d.classList.add("br");
+      if((r+1)%br===0 && r<n-1) d.classList.add("bb");
+      const v=document.createElement("span"); d.appendChild(v); d._v=v;
+      el.appendChild(d); cells.push(d);
+    }
+    return cells;
+  }
+
+  /* static rule diagrams */
+  [["rule-row",(r,c)=>r===4],["rule-col",(r,c)=>c===4],["rule-box",(r,c)=>r>=3&&r<6&&c>=3&&c<6]].forEach(([id,f])=>{
+    const el=document.getElementById(id); if(!el) return;
+    build(el,9,3,3).forEach((d,i)=>{ if(f(Math.floor(i/9),i%9)) d.classList.add("unit"); });
+  });
+
+  function cageDecor(cells, n, cages){
+    const owner=new Array(n*n).fill(-1);
+    cages.forEach(([cs],k)=>cs.forEach(c=>owner[c]=k));
+    // greedy tint colouring, 5 tints
+    const tint=new Array(cages.length).fill(-1);
+    cages.forEach(([cs],k)=>{
+      const used=new Set();
+      cs.forEach(c=>{ const r=Math.floor(c/n), col=c%n;
+        [[r-1,col],[r+1,col],[r,col-1],[r,col+1]].forEach(([rr,cc])=>{ if(rr<0||cc<0||rr>=n||cc>=n) return; const o=owner[rr*n+cc]; if(o!==k && tint[o]>=0) used.add(tint[o]); }); });
+      let t=0; while(used.has(t)) t++; tint[k]=t%5;
+    });
+    cells.forEach((d,i)=>{
+      const k=owner[i];
+      d.style.setProperty("--tint","var(--t"+(tint[k]+1)+")");
+      if(Math.min(...cages[k][0])===i){ const s=document.createElement("span"); s.className="sum"; s.textContent=cages[k][1]; d.appendChild(s); }
+    });
+    // one continuous inset outline per cage, drawn in an SVG over the grid
+    const S=100, IN=9, NS="http://www.w3.org/2000/svg";
+    const svg=document.createElementNS(NS,"svg");
+    svg.setAttribute("viewBox","0 0 "+(n*S)+" "+(n*S)); svg.setAttribute("preserveAspectRatio","none"); svg.setAttribute("class","cage-svg"); svg.setAttribute("aria-hidden","true");
+    const inC=(k,r,c)=>r>=0&&c>=0&&r<n&&c<n&&owner[r*n+c]===k;
+    let dpath="";
+    for(let i=0;i<n*n;i++){
+      const k=owner[i], r=Math.floor(i/n), c=i%n, x0=c*S, y0=r*S, x1=x0+S, y1=y0+S;
+      const end=(along,side,diag,edge,inner,outer)=> !along ? inner : (side ? outer : edge);
+      // top edge
+      if(!inC(k,r-1,c)){
+        const a=end(inC(k,r,c-1),inC(k,r-1,c-1),0,x0,x0+IN,x0-IN), b=end(inC(k,r,c+1),inC(k,r-1,c+1),0,x1,x1-IN,x1+IN);
+        dpath+="M"+a+" "+(y0+IN)+"H"+b;
+      }
+      if(!inC(k,r+1,c)){
+        const a=end(inC(k,r,c-1),inC(k,r+1,c-1),0,x0,x0+IN,x0-IN), b=end(inC(k,r,c+1),inC(k,r+1,c+1),0,x1,x1-IN,x1+IN);
+        dpath+="M"+a+" "+(y1-IN)+"H"+b;
+      }
+      if(!inC(k,r,c-1)){
+        const a=end(inC(k,r-1,c),inC(k,r-1,c-1),0,y0,y0+IN,y0-IN), b=end(inC(k,r+1,c),inC(k,r+1,c-1),0,y1,y1-IN,y1+IN);
+        dpath+="M"+(x0+IN)+" "+a+"V"+b;
+      }
+      if(!inC(k,r,c+1)){
+        const a=end(inC(k,r-1,c),inC(k,r-1,c+1),0,y0,y0+IN,y0-IN), b=end(inC(k,r+1,c),inC(k,r+1,c+1),0,y1,y1-IN,y1+IN);
+        dpath+="M"+(x1-IN)+" "+a+"V"+b;
+      }
+    }
+    const p=document.createElementNS(NS,"path"); p.setAttribute("d",dpath); svg.appendChild(p);
+    cells[0].parentNode.appendChild(svg);
+  }
+
+  document.querySelectorAll("[data-walk]").forEach(root=>{
+    const key=root.dataset.walk; if(key==="flurry"||key==="pencil"||key==="samurai") return;
+    const D=W[key], n=D.n;
+    const grid=root.querySelector(".grid"), say=root.querySelector(".say"), bar=root.querySelector(".bar span"), count=root.querySelector(".progress");
+    const next=root.querySelector('[data-act="next"]'), back=root.querySelector('[data-act="back"]');
+    grid.setAttribute("aria-label", key+" walkthrough grid");
+    const cells=build(grid,n,D.br,D.bc);
+    if(D.diag) cells.forEach((d,i)=>{ const r=Math.floor(i/n),c=i%n; if(r===c||r+c===n-1) d.classList.add("diag"); });
+    if(D.cages){ grid.classList.add("killer"); cageDecor(cells,n,D.cages); }
+    let step=0;
+    const at=k=>{ const g=D.p.slice(); for(let s=0;s<k;s++){ const st=D.steps[s]; if(st[0]===-1) st[1].forEach(([c,d])=>g[c]=d); else g[st[0]]=st[1]; } return g; };
+    function render(){
+      const g=at(step);
+      cells.forEach((d,i)=>{ d.classList.remove("unit","sight","hit","placed"); d._v.textContent=g[i]||""; if(g[i]&&!D.p[i]) d.classList.add("placed"); });
+      if(step===0) say.textContent=INTRO[key];
+      else {
+        const [c,dig,txt,u,s]=D.steps[step-1];
+        u.forEach(j=>cells[j].classList.add("unit"));
+        s.forEach(j=>cells[j].classList.add("sight"));
+        if(c===-1) dig.forEach(([cc])=>cells[cc].classList.add("unit")); else cells[c].classList.add("hit");
+        say.textContent=txt+(step===D.steps.length?DONE:"");
+      }
+      back.disabled=step===0; next.disabled=step===D.steps.length;
+      count.textContent=step+" of "+D.steps.length;
+      bar.style.width=(100*step/D.steps.length)+"%";
+    }
+    next.addEventListener("click",()=>{ if(step<D.steps.length){step++;render();} });
+    back.addEventListener("click",()=>{ if(step>0){step--;render();} });
+    root.querySelector('[data-act="restart"]').addEventListener("click",()=>{step=0;render();});
+    render();
+  });
+
+  (function(){
+    const root=document.querySelector('[data-walk="pencil"]'); if(!root) return;
+    const P0=W.classic.p.slice(), n=9;
+    const BOX=[42,43,44,51,52,53,60,61,62].map(i=>i); // placeholder, recomputed below
+    const box=[]; for(let i=3;i<6;i++) for(let j=6;j<9;j++) box.push(i*9+j);
+    const STEPS=[
+      {txt:"Pencil marks help most when you're stuck. Let's take one box, the middle-right one, and work it with marks."},
+      {marks:true, txt:"For each empty cell in the box, I write every digit that isn't already in its row, column or box. These are its pencil marks."},
+      {place:[44,6], txt:"This cell has only one mark: 6. That's the answer, so it goes in."},
+      {place:[53,8], txt:"Same here. The only mark is 8."},
+      {marks:true, txt:"When a digit goes in, cross it off the marks in the same row, column and box. The 8s are gone, and the cell next to it is down to one mark."},
+      {place:[52,9], txt:"Only 9 is left in this cell, so it's a 9. That also clears the 9s around it."},
+      {place:[51,2], txt:"Now this one is down to a single mark: 2."},
+      {place:[42,3], txt:"And the last cell has only 3 left. Box done, without a single guess. Tip: don't mark the whole grid. Mark the box or row you're stuck on, and if two cells share the same two marks, like 4 and 8, cross those digits off everywhere else in that row, column or box."}
+    ];
+    const grid=root.querySelector(".grid"), say=root.querySelector(".say"), bar=root.querySelector(".bar span"), count=root.querySelector(".progress");
+    const next=root.querySelector('[data-act="next"]'), back=root.querySelector('[data-act="back"]');
+    grid.setAttribute("aria-label","Pencil marks walkthrough grid");
+    const cells=build(grid,n,3,3);
+    const boxOf=i=>Math.floor(Math.floor(i/9)/3)*3+Math.floor((i%9)/3);
+    const peers=i=>{const r=Math.floor(i/9),c=i%9,b=boxOf(i),o=[];for(let j=0;j<81;j++) if(j!==i&&(Math.floor(j/9)===r||j%9===c||boxOf(j)===b)) o.push(j);return o;};
+    const cand=(g,i)=>{const seen=new Set(peers(i).map(j=>g[j]));const o=[];for(let d=1;d<=9;d++) if(!seen.has(d)) o.push(d);return o;};
+    let step=0;
+    function render(){
+      const g=P0.slice(); let showMarks=false;
+      for(let k=0;k<step;k++){ const st=STEPS[k+1]; if(!st) break; }
+      for(let k=1;k<=step;k++){ const st=STEPS[k]; if(st.marks) showMarks=true; if(st.place && k<step) g[st.place[0]]=st.place[1]; }
+      const cur=STEPS[step];
+      if(cur.place) g[cur.place[0]]=cur.place[1];
+      cells.forEach((d,i)=>{
+        d.classList.remove("unit","sight","hit","placed");
+        if(g[i]){ d._v.textContent=g[i]; d._v.style.cssText=""; if(!P0[i]) d.classList.add("placed"); }
+        else if(showMarks && box.includes(i)){
+          const cs=cand(g,i); let h='<span class="pm">'; for(let dd=1;dd<=9;dd++) h+='<span>'+(cs.includes(dd)?dd:"")+'</span>'; h+='</span>';
+          d._v.innerHTML=h; d._v.style.cssText="display:block;width:100%;height:100%";
+        } else { d._v.textContent=""; d._v.style.cssText=""; }
+        if(box.includes(i)) d.classList.add("unit");
+      });
+      if(cur.place) { cells[cur.place[0]].classList.remove("unit"); cells[cur.place[0]].classList.add("hit"); }
+      say.textContent=cur.txt;
+      back.disabled=step===0; next.disabled=step===STEPS.length-1;
+      count.textContent=step+" of "+(STEPS.length-1); bar.style.width=(100*step/(STEPS.length-1))+"%";
+    }
+    next.addEventListener("click",()=>{ if(step<STEPS.length-1){step++;render();} });
+    back.addEventListener("click",()=>{ if(step>0){step--;render();} });
+    root.querySelector('[data-act="restart"]').addEventListener("click",()=>{step=0;render();});
+    render();
+  })();
+
+  (function(){
+    const root=document.querySelector('[data-walk="flurry"]'); if(!root) return;
+    const D=FLURRY, n=9, FLAKE="<svg class=\"flake\" viewBox=\"-12 -12 24 24\" aria-hidden=\"true\"><g stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" fill=\"none\"><path d=\"M0-10V10M-8.7-5L8.7 5M-8.7 5L8.7-5\"/><path d=\"M-3-8L0-5L3-8M-3 8L0 5L3 8M-8.4-1.4L-5.6-2.8L-5.8-6M8.4 1.4L5.6 2.8L5.8 6M-8.4 1.4L-5.6 2.8L-5.8 6M8.4-1.4L5.6-2.8L5.8-6\"/></g></svg>";
+    const grid=root.querySelector(".grid"), say=root.querySelector(".say"), bar=root.querySelector(".bar span"), count=root.querySelector(".progress");
+    const next=root.querySelector('[data-act="next"]'), back=root.querySelector('[data-act="back"]');
+    grid.setAttribute("aria-label","Flurry walkthrough grid");
+    const cells=build(grid,n,3,3);
+    let step=0;
+    function render(){
+      const marks={};
+      for(let k=0;k<step;k++){ const [cs,v]=D.steps[k]; cs.forEach(c=>marks[c]=v); }
+      cells.forEach((d,i)=>{
+        d.classList.remove("unit","sight","hit","placed","clue");
+        if(D.p[i]>=0){ d._v.textContent=D.p[i]; d.classList.add("clue"); return; }
+        d._v.innerHTML = marks[i]===1 ? FLAKE : (marks[i]===2 ? '<span class="dot" style="display:block"></span>' : "");
+        d._v.style.cssText="display:flex;align-items:center;justify-content:center;width:100%;height:100%";
+      });
+      if(step===0) say.textContent=INTRO.flurry;
+      else {
+        const [cs,v,txt,u,s]=D.steps[step-1];
+        u.forEach(j=>cells[j].classList.add("unit")); s.forEach(j=>cells[j].classList.add("sight")); cs.forEach(j=>cells[j].classList.add("hit"));
+        say.textContent=txt+(step===D.steps.length?DONE:"");
+      }
+      back.disabled=step===0; next.disabled=step===D.steps.length;
+      count.textContent=step+" of "+D.steps.length; bar.style.width=(100*step/D.steps.length)+"%";
+    }
+    next.addEventListener("click",()=>{ if(step<D.steps.length){step++;render();} });
+    back.addEventListener("click",()=>{ if(step>0){step--;render();} });
+    root.querySelector('[data-act="restart"]').addEventListener("click",()=>{step=0;render();});
+    render();
+  })();
+  (function(){
+    const root=document.querySelector('[data-walk="samurai"]'); if(!root) return;
+    const D=SAMURAI, n=21, OFF=[[0,0],[0,12],[6,6],[12,0],[12,12]];
+    const grid=root.querySelector(".sgrid"), say=root.querySelector(".say"), bar=root.querySelector(".bar span"), count=root.querySelector(".progress");
+    const next=root.querySelector('[data-act="next"]'), back=root.querySelector('[data-act="back"]');
+    grid.setAttribute("aria-label","Samurai walkthrough grid");
+    const inG=(i)=>{const r=Math.floor(i/n),c=i%n;let k=0;OFF.forEach(([R,C])=>{if(r>=R&&r<R+9&&c>=C&&c<C+9)k++;});return k;};
+    const cells=[];
+    for(let i=0;i<n*n;i++){
+      const d=document.createElement("div"); d.className="cell";
+      const k=inG(i); if(!k) d.classList.add("gap"); if(k===2) d.classList.add("shared");
+      const v=document.createElement("span"); d.appendChild(v); d._v=v; grid.appendChild(d); cells.push(d);
+    }
+    const NS="http://www.w3.org/2000/svg", S=100, svg=document.createElementNS(NS,"svg");
+    svg.setAttribute("viewBox","0 0 "+(n*S)+" "+(n*S)); svg.setAttribute("preserveAspectRatio","none"); svg.setAttribute("aria-hidden","true");
+    let thin="", thick="";
+    OFF.forEach(([R,C])=>{
+      const x0=C*S, y0=R*S, x1=x0+9*S, y1=y0+9*S;
+      for(let k=1;k<9;k++){
+        const x=x0+k*S, y=y0+k*S;
+        if(k%3) { thin+="M"+x+" "+y0+"V"+y1+"M"+x0+" "+y+"H"+x1; }
+        else { thick+="M"+x+" "+y0+"V"+y1+"M"+x0+" "+y+"H"+x1; }
+      }
+      thick+="M"+x0+" "+y0+"H"+x1+"V"+y1+"H"+x0+"Z";
+    });
+    [["thin",thin],["thick",thick]].forEach(([c,d])=>{const p=document.createElementNS(NS,"path");p.setAttribute("d",d);p.setAttribute("class",c);svg.appendChild(p);});
+    grid.appendChild(svg);
+    let step=0;
+    const at=k=>{ const g=D.p.slice(); for(let s=0;s<k;s++){ const st=D.steps[s]; if(st[0]===-1) st[1].forEach(([c,d])=>g[c]=d); else g[st[0]]=st[1]; } return g; };
+    function render(){
+      const g=at(step);
+      cells.forEach((d,i)=>{ d.classList.remove("unit","sight","hit","placed"); d._v.textContent=g[i]>0?g[i]:""; if(g[i]>0&&D.p[i]===0) d.classList.add("placed"); });
+      if(step===0) say.textContent=INTRO.samurai;
+      else {
+        const [c,dig,txt,u,s]=D.steps[step-1];
+        u.forEach(j=>cells[j].classList.add("unit"));
+        s.forEach(j=>cells[j].classList.add("sight"));
+        if(c===-1) dig.forEach(([cc])=>cells[cc].classList.add("unit")); else { cells[c].classList.add("hit"); if(cells[c].scrollIntoView&&grid.parentNode.scrollWidth>grid.parentNode.clientWidth){ const sc=grid.parentNode, x=cells[c].offsetLeft-sc.clientWidth/2; sc.scrollTo({left:Math.max(0,x),behavior:"smooth"}); } }
+        say.textContent=txt+(step===D.steps.length?DONE:"");
+      }
+      back.disabled=step===0; next.disabled=step===D.steps.length;
+      count.textContent=step+" of "+D.steps.length;
+      bar.style.width=(100*step/D.steps.length)+"%";
+    }
+    next.addEventListener("click",()=>{ if(step<D.steps.length){step++;render();} });
+    back.addEventListener("click",()=>{ if(step>0){step--;render();} });
+    root.querySelector('[data-act="restart"]').addEventListener("click",()=>{step=0;render();});
+    render();
+  })();
+})();
+
+</script>
+</body>
+</html>
