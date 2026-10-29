@@ -191,6 +191,8 @@ footer{padding-block:12px 36px;color:var(--muted);font-size:.85rem}
   .walk>.stack{order:2;gap:10px;width:100%;align-self:stretch}
   .walk .controls{order:3}
   .walk-side>p{order:4}
+  .sec>.deuce{display:none}
+  .say::before{background:url(img/deuce-think.png) no-repeat left center/auto 30px;padding-left:28px;line-height:30px;margin-bottom:6px}
   .walk,.sec .walk{grid-template-columns:1fr}
   .sec .deuce img{max-width:130px}
   .hero{grid-template-columns:1fr}
@@ -509,6 +511,15 @@ footer{padding-block:12px 36px;color:var(--muted);font-size:.85rem}
     killer: "A brand-new Killer. The board is completely empty. Each dashed cage shows its total in the corner. So where do you even start?"
   };
   const DONE = " That's the last one. Solved!";
+  /* phones: after Back/Next/Start over, keep Deuce's text, the board and the buttons framed on screen */
+  document.addEventListener("click",e=>{
+    const btn=e.target.closest("[data-walk] [data-act]"); if(!btn||window.innerWidth>820) return;
+    const root=btn.closest("[data-walk]"), say=root.querySelector(".say"), ctl=root.querySelector(".controls");
+    requestAnimationFrame(()=>{
+      const top=say.getBoundingClientRect().top, bottom=ctl.getBoundingClientRect().bottom;
+      if(top<8||bottom>window.innerHeight-8) window.scrollBy({top:top-12,behavior:"smooth"});
+    });
+  });
   function lockSay(say, texts){
     function fit(){
       const keep=say.textContent; say.style.minHeight="0"; let m=0;
