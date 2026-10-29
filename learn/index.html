@@ -184,6 +184,13 @@ button:disabled{opacity:.45;cursor:default}
 footer{padding-block:12px 36px;color:var(--muted);font-size:.85rem}
 
 @media (max-width:820px){
+  .walk,.sec .walk{display:flex;flex-direction:column;gap:14px}
+  .walk-side,.walk-head{display:contents}
+  .walk-head img{display:none}
+  .walk .say{order:1;min-height:0}
+  .walk>.stack{order:2;gap:10px;width:100%;align-self:stretch}
+  .walk .controls{order:3}
+  .walk-side>p{order:4}
   .walk,.sec .walk{grid-template-columns:1fr}
   .sec .deuce img{max-width:130px}
   .hero{grid-template-columns:1fr}
@@ -502,6 +509,16 @@ footer{padding-block:12px 36px;color:var(--muted);font-size:.85rem}
     killer: "A brand-new Killer. The board is completely empty. Each dashed cage shows its total in the corner. So where do you even start?"
   };
   const DONE = " That's the last one. Solved!";
+  function lockSay(say, texts){
+    function fit(){
+      const keep=say.textContent; say.style.minHeight="0"; let m=0;
+      texts.forEach(t=>{ say.textContent=t; m=Math.max(m,say.offsetHeight); });
+      say.textContent=keep; say.style.minHeight=m+"px";
+    }
+    fit(); let t; window.addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(fit,150);});
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fit);
+  }
+  const stepTexts=(intro,steps,i)=>[intro].concat(steps.map((s,k)=>s[i]+(k===steps.length-1?DONE:"")));
 
   function build(el, n, br, bc){
     el.style.gridTemplateColumns = "repeat("+n+",1fr)";
@@ -600,6 +617,7 @@ footer{padding-block:12px 36px;color:var(--muted);font-size:.85rem}
     back.addEventListener("click",()=>{ if(step>0){step--;render();} });
     root.querySelector('[data-act="restart"]').addEventListener("click",()=>{step=0;render();});
     render();
+    lockSay(say, stepTexts(INTRO[key], D.steps, 2));
   });
 
   (function(){
@@ -649,6 +667,7 @@ footer{padding-block:12px 36px;color:var(--muted);font-size:.85rem}
     back.addEventListener("click",()=>{ if(step>0){step--;render();} });
     root.querySelector('[data-act="restart"]').addEventListener("click",()=>{step=0;render();});
     render();
+    lockSay(say, STEPS.map(s=>s.txt));
   })();
 
   (function(){
@@ -681,6 +700,7 @@ footer{padding-block:12px 36px;color:var(--muted);font-size:.85rem}
     back.addEventListener("click",()=>{ if(step>0){step--;render();} });
     root.querySelector('[data-act="restart"]').addEventListener("click",()=>{step=0;render();});
     render();
+    lockSay(say, stepTexts(INTRO.flurry, D.steps, 2));
   })();
   (function(){
     const root=document.querySelector('[data-walk="samurai"]'); if(!root) return;
@@ -730,6 +750,7 @@ footer{padding-block:12px 36px;color:var(--muted);font-size:.85rem}
     back.addEventListener("click",()=>{ if(step>0){step--;render();} });
     root.querySelector('[data-act="restart"]').addEventListener("click",()=>{step=0;render();});
     render();
+    lockSay(say, stepTexts(INTRO.samurai, D.steps, 2));
   })();
 })();
 
